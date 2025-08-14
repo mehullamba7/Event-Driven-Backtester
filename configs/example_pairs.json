@@ -1,0 +1,26 @@
+{
+  "strategy": "pairs_cointegration",
+  "symbols": [
+    "AAA",
+    "BBB"
+  ],
+  "bar": {
+    "type": "time",
+    "freq": "1s"
+  },
+  "signal": {
+    "entry_z": 2.0,
+    "exit_z": 0.5
+  },
+  "costs": {
+    "fee_bps": 0.5,
+    "slippage_bps": 1.0
+  },
+  "validation": {
+    "splits": 5,
+    "embargo": 50
+  },
+  "data_paths": [
+    "data/raw/sample_ticks.parquet"
+  ]
+}
