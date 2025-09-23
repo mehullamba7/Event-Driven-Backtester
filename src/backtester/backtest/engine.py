@@ -1,17 +1,19 @@
 from __future__ import annotations
+
 from collections import deque
-from typing import Callable, Deque
-from .events import MarketDataEvent, SignalEvent, OrderEvent, FillEvent
+from typing import Callable
+
+from .events import FillEvent, MarketDataEvent, OrderEvent, SignalEvent
 from .simulator import SimpleSimulator
 
 
 class Engine:
     def __init__(self, simulator: SimpleSimulator):
         self.sim = simulator
-        self.market_q: Deque[MarketDataEvent] = deque()
-        self.signal_q: Deque[SignalEvent] = deque()
-        self.order_q: Deque[OrderEvent] = deque()
-        self.fill_q: Deque[FillEvent] = deque()
+        self.market_q: deque[MarketDataEvent] = deque()
+        self.signal_q: deque[SignalEvent] = deque()
+        self.order_q: deque[OrderEvent] = deque()
+        self.fill_q: deque[FillEvent] = deque()
 
     def on_market(self, handler: Callable[[MarketDataEvent], None]):
         self._on_market = handler
