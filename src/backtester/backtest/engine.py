@@ -4,6 +4,7 @@ from typing import Callable, Deque
 from .events import MarketDataEvent, SignalEvent, OrderEvent, FillEvent
 from .simulator import SimpleSimulator
 
+
 class Engine:
     def __init__(self, simulator: SimpleSimulator):
         self.sim = simulator
