@@ -1,5 +1,6 @@
 from queue import Queue, Empty
 
+
 class EventQueue:
     def __init__(self):
         self._q = Queue()
