@@ -1,32 +1,39 @@
 from dataclasses import dataclass
-from typing import Optional
+from enum import Enum
+from datetime import datetime
 
-@dataclass(frozen=True)
-class MarketDataEvent:
-    ts_ns: int
-    symbol: str
-    price: float
-    size: float
-    side: str  # 'bid' or 'ask'
+class EventType(Enum):
+    MARKET = "MARKET"
+    SIGNAL = "SIGNAL"
+    ORDER = "ORDER"
+    FILL = "FILL"
 
-@dataclass(frozen=True)
-class SignalEvent:
-    ts_ns: int
-    symbol: str
-    signal: float  # e.g., z-score or signed strength
+@dataclass
+class Event:
+    dt: datetime
 
-@dataclass(frozen=True)
-class OrderEvent:
-    ts_ns: int
+@dataclass
+class MarketEvent(Event):
     symbol: str
-    qty: int
-    side: str  # 'buy' or 'sell'
-    limit_price: Optional[float] = None
 
-@dataclass(frozen=True)
-class FillEvent:
-    ts_ns: int
+@dataclass
+class SignalEvent(Event):
     symbol: str
-    qty: int
-    price: float
-    fee: float = 0.0
+    direction: int
+    strength: float = 1.0
+
+@dataclass
+class OrderEvent(Event):
+    symbol: str
+    order_type: str
+    quantity: int
+    direction: str
+
+@dataclass
+class FillEvent(Event):
+    symbol: str
+    quantity: int
+    direction: str
+    fill_price: float
+    commission: float
+    slippage: float = 0.0
