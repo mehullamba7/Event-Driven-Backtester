@@ -1,39 +1,31 @@
-from __future__ import annotations
-
-from collections import deque
-from typing import Callable
-
-from .events import FillEvent, MarketDataEvent, OrderEvent, SignalEvent
-from .simulator import SimpleSimulator
-
+from ..utils.queue import EventQueue
+from ..events import MarketEvent, SignalEvent, OrderEvent, FillEvent
 
 class Engine:
-    def __init__(self, simulator: SimpleSimulator):
-        self.sim = simulator
-        self.market_q: deque[MarketDataEvent] = deque()
-        self.signal_q: deque[SignalEvent] = deque()
-        self.order_q: deque[OrderEvent] = deque()
-        self.fill_q: deque[FillEvent] = deque()
+    def __init__(self, data, strategy, portfolio, execution):
+        self.events = EventQueue()
+        self.data = data
+        self.strategy = strategy
+        self.portfolio = portfolio
+        self.execution = execution
 
-    def on_market(self, handler: Callable[[MarketDataEvent], None]):
-        self._on_market = handler
+    def run(self):
+        while True:
+            # Step 1: advance data -> push MarketEvents
+            self.data.update_bars()
+            if not self.data.continue_backtest:
+                break
 
-    def on_signal(self, handler: Callable[[SignalEvent], None]):
-        self._on_signal = handler
-
-    def on_order(self, handler: Callable[[OrderEvent], None]):
-        self._on_order = handler
-
-    def pump(self):
-        while self.market_q:
-            ev = self.market_q.popleft()
-            if hasattr(self, "_on_market"):
-                self._on_market(ev)
-        while self.signal_q:
-            sv = self.signal_q.popleft()
-            if hasattr(self, "_on_signal"):
-                self._on_signal(sv)
-        if self.order_q:
-            fills = self.sim.match(self.order_q)
-            self.order_q.clear()
-            self.fill_q.extend(fills)
+            # Step 2: drain and route all events for this step
+            while not self.events.empty():
+                ev = self.events.get_nowait()
+                if ev is None:
+                    break
+                if isinstance(ev, MarketEvent):
+                    self.strategy.on_market(ev)
+                elif isinstance(ev, SignalEvent):
+                    self.portfolio.on_signal(ev)
+                elif isinstance(ev, OrderEvent):
+                    self.execution.execute_order(ev)
+                elif isinstance(ev, FillEvent):
+                    self.portfolio.on_fill(ev)
