@@ -1,7 +1,7 @@
 from collections import defaultdict
 from .position import Position
 from ..events import SignalEvent, OrderEvent, FillEvent
-from ..utils.enums import signal_to_side, Side
+from ..utils.enums import signal_to_side
 from ..portfolio.risk import dollars_to_qty, clamp_qty, clamp_notional
 from ..backtest.logger import get_logger, log_order, log_fill
 
