@@ -16,6 +16,7 @@ from edbt.portfolio.portfolio import Portfolio
 from edbt.execution.broker_sim import SimulatedBroker
 from edbt.backtest.engine import Engine
 from edbt.backtest.metrics import equity_to_metrics
+from edbt.backtest.logger import get_logger
 
 # 3) Create synthetic CSV if real data is missing
 def ensure_synthetic_csv(symbol: str = "SPY", n_days: int = 300):
@@ -55,17 +56,17 @@ def ensure_synthetic_csv(symbol: str = "SPY", n_days: int = 300):
 if __name__ == "__main__":
     SYMBOL = "SPY"
     csv_path = ensure_synthetic_csv(SYMBOL)  # creates examples/data/SPY.csv if missing
-
+    logger = get_logger("edbt.backtest")
     # Shared event queue
     events = EventQueue()
 
     # Wire components
     data = HistoricCSVDataHandler([SYMBOL], events, csv_dir=str(csv_path.parent))
     strat = SMACrossoverStrategy(data, events, symbol=SYMBOL, short=50, long=200)
-    port = Portfolio(events, data, starting_cash=100_000)
-    broker = SimulatedBroker(events, data)
+    port = Portfolio(events, data, starting_cash=100_000, risk_per_trade=0.01, logger=logger)
+    broker = SimulatedBroker(events, data, logger=logger, commission_per_share=0.005, bps_slippage=1)
 
-    engine = Engine(data, strat, port, broker)
+    engine = Engine(data, strat, port, broker, logger)
     engine.events = events  # share the same queue instance
     engine.run()
 

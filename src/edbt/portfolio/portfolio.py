@@ -39,7 +39,7 @@ class Portfolio:
             return None
         return float(bar[-1].close)
     
-    def _compute_equity(self, symbol: str) -> float:
+    def _compute_equity(self) -> float:
         #cash plus unrelasied stock holdings
         equity = self.cash
         for sym, p in self.holdings.items():

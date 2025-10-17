@@ -55,6 +55,7 @@ def ensure_sorted_unique_index(df: pd.DataFrame) -> pd.DataFrame:
 def resample_equity_daily(equity: Iterable[tuple]) -> pd.Series:
     """Given (dt, equity), forward-fill to business days for stable daily metrics."""
     df = pd.DataFrame(equity, columns=["dt", "equity"]).set_index("dt").sort_index()
+    df = ensure_sorted_unique_index(df)
     df.index = pd.to_datetime(df.index, utc=True)
     # Resample to business days and ffill the last known equity
     daily = df["equity"].resample("B").ffill()
