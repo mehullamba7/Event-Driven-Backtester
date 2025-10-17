@@ -2,7 +2,7 @@ from .execution_handler import ExecutionHandler
 from ..events import OrderEvent, FillEvent
 from .slippage import fixed_bps
 from .fees import per_share
-from ..backtest.logger import log_fill, get_logger
+from ..backtest.logger import get_logger
 
 class SimulatedBroker(ExecutionHandler):
     def __init__(self, events, data_handler, commission_per_share = 0.005, bps_slippage = 1, logger = None):
@@ -35,4 +35,4 @@ class SimulatedBroker(ExecutionHandler):
             slippage=slip_per_share,      # per-share slip recorded for transparency
         )
         self.events.put(fill)
-        log_fill(self.logger, fill)
+        #log_fill(self.logger, fill)
