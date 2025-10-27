@@ -2,7 +2,6 @@ from __future__ import annotations
 import sqlite3
 from pathlib import Path
 from typing import Optional
-from datetime import datetime
 from ..config import SQLITE_PATH
 
 SCHEMA = """

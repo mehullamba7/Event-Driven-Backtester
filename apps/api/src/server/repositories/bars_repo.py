@@ -1,8 +1,8 @@
 from __future__ import annotations
 from pathlib import Path
-from typing import Iterator, Optional, Tuple, Dict
+from typing import Optional, Tuple
 import pandas as pd
-from ..server.config import BARS_ROOT
+from ..config import BARS_ROOT
 
 def bars_parquet_path(symbol: str, timeframe: str) -> Path:
     return BARS_ROOT / f"{symbol}_{timeframe}.parquet"
